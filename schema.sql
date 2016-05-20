@@ -5,7 +5,8 @@ create table entries (
   reciever text not null,
   'text' text not null,
   'date' date not null,
-  recieved boolean not null
+  recieved boolean not null,
+  addfriend boolean not null
 );
 
 drop table if exists user;
@@ -15,3 +16,9 @@ create table user (
   pw_hash text not null
 );
 
+drop table if exists friend;
+create table friend (
+	friend_id integer primary key autoincrement,
+	username text not null,
+	friendname text not null
+);

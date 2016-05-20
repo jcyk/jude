@@ -64,7 +64,7 @@ def pass_one_day():
 @app.route('/whoisyourdaddy')
 def all_entries():
     db = get_db()
-    cur = db.execute('select sender,reciever,text,date,recieved from entries order by id desc')
+    cur = db.execute('select sender,reciever,text,date,recieved,addfriend from entries order by id desc')
     entries = cur.fetchall()
     return render_template('all_entries.html', entries=entries)
 
@@ -100,10 +100,26 @@ def add_entry():
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
-    db.execute('insert into entries (sender,reciever,text,date,recieved) values (?,?,?,?,?)',
-               [session['username'],request.form['reciever'], request.form['text'],datetime.utcfromtimestamp(int(time.time())).strftime('%Y-%m-%d'),False])
+    db.execute('insert into entries (sender,reciever,text,date,recieved,addfriend) values (?,?,?,?,?,?)',
+               [session['username'],request.form['reciever'], request.form['text'],datetime.utcfromtimestamp(int(time.time())).strftime('%Y-%m-%d'),False,request.form['addfriend']=='yes'])
     db.commit()
     flash('New entry was successfully sent')
+    return redirect(url_for('user_entries',username = session['username']))
+
+@app.route('/addfriend/<friendname>',methods=['POST'])
+def add_friend(friendname):
+    print 'fuck'
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+
+    db.execute('insert into friend (username,friendname) values (?,?)',
+               [session['username'],friendname])
+    db.execute('insert into friend (username,friendname) values (?,?)',
+            [friendname,session['username']])
+
+    db.commit()
+    flash('Add new friend')
     return redirect(url_for('user_entries',username = session['username']))
 
 @app.route('/<username>')
@@ -111,9 +127,12 @@ def user_entries(username):
     if not session.get('logged_in'):
         abort(401)
     db = get_db()
-    cur = db.execute('select sender, text, date from entries where reciever = ? and recieved = 1 order by id desc',[session['username']])
+    cur = db.execute('select sender, text, date, addfriend from entries where reciever = ? and recieved = 1 order by id desc',[session['username']])
     entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
+
+    cur = db.execute('select friendname from friend where username = ?', [session['username']])
+    friends = cur.fetchall()
+    return render_template('show_entries.html', entries=entries, friends = friends)
 
 
 @app.route('/') 

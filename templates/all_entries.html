@@ -2,7 +2,7 @@
 {% block body %}
   <ul class="entries">
   {% for entry in entries %}
-    <li><h2>From: {{ entry.sender }} To: {{ entry.reciever }} Date: {{ entry.date }} Recieved: {{entry.recieved}}</h2>{{ entry.text|safe }}
+    <li><h2>From: {{ entry.sender }} To: {{ entry.reciever }} Date: {{ entry.date }} Recieved: {{entry.recieved}} Add friend: {{entry.addfriend}}</h2>{{ entry.text|safe }}
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}

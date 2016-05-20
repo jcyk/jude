@@ -5,6 +5,9 @@
       <dl>
         <dt>Reciever: (Leave it blank if you want to meet a new friend.)
         <dd><input type="text" size="50" name="reciever" >
+        <dt> Add him/her as a friend ?
+        <dd> yes <input type="radio" name="addfriend" value="yes" />
+        <dd> no <input type="radio" name="addfriend" value="no" checked/>
         <dt>Text:
         <dd><textarea name="text" rows="5" cols="60"></textarea>
         <dd><input type="submit" value="Send">
@@ -13,9 +16,23 @@
   {% endif %}
   <ul class="entries">
   {% for entry in entries %}
-    <li><h2>From: {{ entry.sender }} Date: {{ entry.date }}</h2>{{ entry.text|safe }}
+    <h2>From: {{ entry.sender }} Date: {{ entry.date }}
+    </h2>{{ entry.text|safe }}
+      {% if entry.addfriend %}
+      <form action= "addfriend/{{ entry.sender }}" method="post" class="add-entry">
+      <input type="submit" value="add friend">
+      </form>
+      {% endif %}
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
+  {% endfor %}
+  </ul>
+  <h2> friends </h2>
+  <ul class="friends">
+  {% for friend in friends %}
+    <li>{{ friend.friendname }}
+  {% else %}
+    <li><em>Unbelievable.  No friends here so far</em>
   {% endfor %}
   </ul>
 {% endblock %}
